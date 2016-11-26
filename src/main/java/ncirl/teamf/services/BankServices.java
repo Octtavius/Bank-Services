@@ -18,12 +18,13 @@ import javax.ws.rs.core.MultivaluedMap;
  *
  * @author I323506
  */
-@Path("bankingonline")
+@Path("/")
 public class BankServices {
     
     @GET
+    @Path("test")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public void displayMainPage(MultivaluedMap<String, String> formParams) {
-        
+    public String displayMainPage(MultivaluedMap<String, String> formParams) {
+        return "MainPage";
     }
 }
