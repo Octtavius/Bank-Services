@@ -22,12 +22,14 @@ import com.google.gson.JsonObject;
  *
  * @author I323506
  */
+
 @Path("/main")
 public class BankServices {
     
     Repository rep = new Repository();
     
     @GET
+    @Path("test")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public void displayMainPage(MultivaluedMap<String, String> formParams) {
         System.out.println("Hello World");
