@@ -5,10 +5,13 @@
  */
 package ncirl.teamf.services.models;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  *
  * @author Rodrigo
  */
+@XmlRootElement
 public class Customer {
     private String customerId;
     private String firstName;
@@ -20,15 +23,15 @@ public class Customer {
     
     public Customer() {}
 
-    public Customer(String customerId, String firstName, String middleName, String lastName, String address, String email, String contactNumber) {
-        this.customerId = customerId;
-        this.firstName = firstName;
-        this.middleName = middleName;
-        this.lastName = lastName;
-        this.address = address;
-        this.email = email;
-        this.contactNumber = contactNumber;
-    }
+//    public Customer(String customerId, String firstName, String middleName, String lastName, String address, String email, String contactNumber) {
+//        this.customerId = customerId;
+//        this.firstName = firstName;
+//        this.middleName = middleName;
+//        this.lastName = lastName;
+//        this.address = address;
+//        this.email = email;
+//        this.contactNumber = contactNumber;
+//    }
 
     public String getCustomerId() {
         return customerId;

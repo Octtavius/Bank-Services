@@ -13,17 +13,17 @@ import ncirl.teamf.services.models.Customer;
  */
 public interface IRepository {
     
-    boolean login(String accountId, String password);
+    boolean login(int accountId, String password);
     
     void createAccount(Customer customer);
     
-    void createAnotherAccount(Customer customer);
+    boolean lodgment(int accNumber, double amound); 
     
-    void lodgment(String accNumber, double amound); 
+    boolean transfer(int senderAccountNumber, double Amount, int recieverAccountNumber, int sortCode);
     
-    void transfer(String senderAccountNumber, double Amount, String recieverAccountNumber, int sortCode);
+    public String checkRecipient(int accountId, int sortCode);
     
-    void withdrawl(String accountNumber, double amount);
+    void withdrawl(int accountNumber, double amount);
     
-    double getBalance(String customerId);
+    double getBalance(int customerId);
 }

@@ -6,11 +6,14 @@
 package ncirl.teamf.services.models;
 
 import java.util.Date;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Rodrigo
  */
+
+@XmlRootElement
 public class Transaction {
     private String transactionId;
     private String transactionType;

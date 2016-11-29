@@ -5,10 +5,14 @@
  */
 package ncirl.teamf.services.models;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  *
  * @author Rodrigo
  */
+
+@XmlRootElement
 public class Account {
     private String accountNumber;    
     private String sortCode;
