@@ -5,8 +5,8 @@
  */
 package ncirl.teamf.services;
 
+import com.google.gson.Gson;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -17,6 +17,9 @@ import ncirl.teamf.services.dao.Repository;
 import ncirl.teamf.services.models.Customer;
 
 import com.google.gson.JsonObject;
+import java.util.ArrayList;
+import java.util.List;
+import ncirl.teamf.services.models.Transaction;
 
 /**
  *
@@ -66,7 +69,7 @@ public class BankServices {
         boolean response = rep.lodgment(accountNum, amount);
         
         JsonObject j = new JsonObject();
-        j.addProperty("lodgementSuccess", response);
+        j.addProperty("response", response);
         return Response.status(200).entity(j.toString()).build();
     }
     
@@ -93,11 +96,11 @@ public class BankServices {
         return Response.status(200).entity(j.toString()).build();
     }
     
-        @POST
+    @POST
     @Path("/transferExecute")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public boolean executeTransfer(MultivaluedMap<String, String> formParams) {
+    public Response executeTransfer(MultivaluedMap<String, String> formParams) {
         int senderAccount = Integer.parseInt(formParams.getFirst("accountId"));
         double amount = Double.parseDouble(formParams.getFirst("amount"));
         int recipientAccount = Integer.parseInt(formParams.getFirst("recipientAccount"));
@@ -105,9 +108,55 @@ public class BankServices {
         
         boolean response = rep.transfer(senderAccount, amount, recipientAccount, recipientSortCode);
         
-        return response;
+        JsonObject j = new JsonObject();
+        j.addProperty("response", response);
+        
+        return Response.status(200).entity(j.toString()).build();
     }
 
+    @POST
+    @Path("/withdraw")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response executeWithdraw(MultivaluedMap<String, String> formParams) {
+        int userAccount = Integer.parseInt(formParams.getFirst("accountId"));
+        double amount = Double.parseDouble(formParams.getFirst("amount"));
+        
+        boolean response = rep.withdraw(userAccount, amount);
+        
+        JsonObject j = new JsonObject();
+        j.addProperty("response", response);
+        
+        return Response.status(200).entity(j.toString()).build();
+    }
+    
+    @POST
+    @Path("/login")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response executeLogin(MultivaluedMap<String, String> formParams) {
+        int userAccount = Integer.parseInt(formParams.getFirst("accountId"));
+        String password = formParams.getFirst("password");
+        
+        Customer cust = rep.login(userAccount, password);
+        
+        Gson gson = new Gson();
+        
+        return Response.status(200).entity(gson.toJson(cust)).build();
+    }
+    
+    @POST
+    @Path("/getTransactions")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response getAllTransactions(MultivaluedMap<String, String> formParams) {
+        
+        int userAccount = Integer.parseInt(formParams.getFirst("accountId"));
+        List<Transaction> allTransactions = rep.getTransactions(userAccount);
+        Gson gson = new Gson();
+        
+        return Response.status(200).entity(gson.toJson(allTransactions)).build();
+    }
     
     private Customer createCustomerObject(MultivaluedMap<String, String> formParams) {
         String firstName = formParams.getFirst("firstName");

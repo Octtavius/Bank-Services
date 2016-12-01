@@ -5,7 +5,9 @@
  */
 package ncirl.teamf.services.dao;
 
+import java.util.List;
 import ncirl.teamf.services.models.Customer;
+import ncirl.teamf.services.models.Transaction;
 
 /**
  *
@@ -13,7 +15,7 @@ import ncirl.teamf.services.models.Customer;
  */
 public interface IRepository {
     
-    boolean login(int accountId, String password);
+    Customer login(int accountId, String password);
     
     void createAccount(Customer customer);
     
@@ -23,7 +25,9 @@ public interface IRepository {
     
     public String checkRecipient(int accountId, int sortCode);
     
-    void withdrawl(int accountNumber, double amount);
+    boolean withdraw(int accountNumber, double amount);
     
     double getBalance(int customerId);
+    
+    List<Transaction> getTransactions(int userAccount);
 }

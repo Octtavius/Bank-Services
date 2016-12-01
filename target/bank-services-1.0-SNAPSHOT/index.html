@@ -136,13 +136,16 @@
                     <div class="row">
                         <div class="col s12 m7">
                             <div class="card">
-                                <div class="card-content">
-                                    <p>I am a very simple card. I am good at containing small bits of information.
-                                        I am convenient because I require little markup to use effectively.</p>
+                                <div class="card-image" ng-controller="Test">
+                                    <img src="images/sample-1.jpg">
+                                    <span class="card-title">Welcome {{userDetails.Name}}</span>
+                                    <span class="card-content">{{currentDate.now() | date:'medium'}}</span>
+                                </div>
+                                <div class="card-content" ng-controller="Balance">
+                                     <h6><p>Current Balance: {{accountDetails.balance}}</p></h6>
                                 </div>
                                 <div class="card-action">
-                                    <a href="#">Lodgment</a>
-                                    <a href="#">Widthraw</a>
+                                    <a href="#">Account Details</a>
                                 </div>
                             </div>
                         </div>
@@ -151,15 +154,12 @@
                     <div class="row">
                         <div class="col s12 m7">
                             <div class="card">
-                                <div class="card-image">
-                                    <img src="images/sample-1.jpg">
-                                    <span class="card-title">Card Title</span>
-                                </div>
-                                <div class="card-content" ng-controller="Test">
-                                    <p>Welcome {{userDetails.Name}}</p>
+                                <div class="card-content">
+                                    <p>Something written here...</p>
                                 </div>
                                 <div class="card-action">
-                                    <a href="#">This is a link</a>
+                                    <a href="#">Lodgment</a>
+                                    <a href="#">Widthraw</a>
                                 </div>
                             </div>
                         </div>

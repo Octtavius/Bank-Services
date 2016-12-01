@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Transaction {
     private String transactionId;
     private String transactionType;
-    private Date timeStamp;
+    private long timeStamp;
     private double transactionAmount;
     private double preBalance;
     private double posBalance;
@@ -25,7 +25,7 @@ public class Transaction {
     
     public Transaction() {}
 
-    public Transaction(String transactionId, String transactionType, Date timeStamp, double transactionAmount, double preBalance, double posBalance, String transactionDescription) {
+    public Transaction(String transactionId, String transactionType, long timeStamp, double transactionAmount, double preBalance, double posBalance, String transactionDescription) {
         this.transactionId = transactionId;
         this.transactionType = transactionType;
         this.timeStamp = timeStamp;
@@ -51,11 +51,11 @@ public class Transaction {
         this.transactionType = transactionType;
     }
 
-    public Date getTimeStamp() {
+    public long getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(Date timeStamp) {
+    public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
     }
 

@@ -5,7 +5,11 @@
  */
 package ncirl.teamf.services.dao;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import ncirl.teamf.services.models.Customer;
+import ncirl.teamf.services.models.Transaction;
 
 /**
  *
@@ -57,15 +61,42 @@ public class Repository implements IRepository{
     }
 
     @Override
-    public void withdrawl(int accountNumber, double amount) {
+    public boolean withdraw(int accountNumber, double amount) {
         System.out.println("Withdraw " + amount + " from account: " + accountNumber);
+        
+        return false;
     }
 
     @Override
-    public boolean login(int accountId, String password) {
+    public Customer login(int accountId, String password) {
         System.out.println("Loging the users. Return true is successfully logged.");
-        return false;
+        
+        Customer customer = new Customer();
+        
+        customer.setFirstName("Jim");
+        customer.setMiddleName("Crazy");
+        customer.setLastName("Button");
+        customer.setAddress("Nowhere");
+        customer.setEmail("sickemail@damn.com");
+        customer.setContactNumber("66666");
+        
+        return customer;
     }   
+
+    @Override
+    public List<Transaction> getTransactions(int userAccount) {
+        List<Transaction> allTransactions = new ArrayList<>();
+        Date d = new Date();
+        Transaction t = new Transaction();
+        t.setTransactionType("transfer");
+        t.setPosBalance(100.00);
+        t.setPreBalance(100.00);
+        t.setTimeStamp(d.getTime());
+        
+        allTransactions.add(t);
+        
+        return allTransactions;
+    }
 
     
 }
