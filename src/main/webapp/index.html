@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html ng-app="bankwebpage">
-    
+
     <head>
         <!-- Import AngularJS-->
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
-        <script src="js/angular.js"></script>
+        <script src="js/angular-input-masks-standalone.min.js"></script>
+        <script src="js/app.js"></script>
         <!--Import Google Icon Font-->
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <!--Import materialize.css-->
@@ -65,7 +66,7 @@
                                                 <td>Lollipop</td>
                                                 <td>$7.00</td>
                                             </tr>
-                                             <tr>
+                                            <tr>
                                                 <td>Alvin</td>
                                                 <td>Eclair</td>
                                                 <td>$0.87</td>
@@ -80,7 +81,7 @@
                                                 <td>Lollipop</td>
                                                 <td>$7.00</td>
                                             </tr>
-                                             <tr>
+                                            <tr>
                                                 <td>Alvin</td>
                                                 <td>Eclair</td>
                                                 <td>$0.87</td>
@@ -95,12 +96,12 @@
                                                 <td>Lollipop</td>
                                                 <td>$7.00</td>
                                             </tr>
-                                                                                        <tr>
+                                            <tr>
                                                 <td>Jonathan</td>
                                                 <td>Lollipop</td>
                                                 <td>$7.00</td>
                                             </tr>
-                                             <tr>
+                                            <tr>
                                                 <td>Alvin</td>
                                                 <td>Eclair</td>
                                                 <td>$0.87</td>
@@ -142,7 +143,7 @@
                                     <span class="card-content">{{currentDate.now() | date:'medium'}}</span>
                                 </div>
                                 <div class="card-content" ng-controller="Balance">
-                                     <h6><p>Current Balance: {{accountDetails.balance}}</p></h6>
+                                    <h6><p>Current Balance: {{accountDetails.balance}}</p></h6>
                                 </div>
                                 <div class="card-action">
                                     <a href="#">Account Details</a>
@@ -155,11 +156,50 @@
                         <div class="col s12 m7">
                             <div class="card">
                                 <div class="card-content">
-                                    <p>Something written here...</p>
+                                    <span class="card-title grey-text text-darken-4">Transfer</span>
+                                    
+                                    <div ng-controller="TransferForm">
+                                        <!-- PlaceHolder for Messages -->
+                                        <div id="messages" ng-show="message">{{ message }}</div>
+                                        
+                                        <form ng-submit="processForm()">
+                                            <!-- Destination Account -->
+                                            <div id="name-group" class="form-group">
+                                                <label>Destination Account</label>
+                                                <input type="text" name="transferDestAccount" class="form-control" placeholder="Insert destination account ID here..." ng-model="formTransferData.destAccountId">
+                                                <span class="help-block"></span>
+                                            </div>
+
+                                            <!-- Description -->
+                                            <div id="superhero-group" class="form-group">
+                                                <label>Amount</label>
+                                                <input type="text" name="transferValue" class="form-control" placeholder="Insert value here..." ng-model="formTransferData.amount" ui-money-mask>
+                                                <span class="help-block"></span>
+                                            </div>
+
+                                            <!-- Transfer Button -->
+                                            <button type="submit" class="btn btn-success btn-lg btn-block">
+                                                <span class="glyphicon glyphicon-flash"></span> Transfer
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12 m7">
+                            <div class="card">
+                                <div class="card-content">
+                                    <span class="card-title activator grey-text text-darken-4">Widthraw<i class="material-icons right">more_vert</i></span>
+                                    <p>To perform actions on your account use the links below</p>
                                 </div>
                                 <div class="card-action">
-                                    <a href="#">Lodgment</a>
                                     <a href="#">Widthraw</a>
+                                </div>
+                                <div class="card-reveal">
+                                    <span class="card-title grey-text text-darken-4">Execute a widthraw<i class="material-icons right">close</i></span>
+                                    <p>Here is some more information about this product that is only revealed once clicked on.</p>
                                 </div>
                             </div>
                         </div>
@@ -169,9 +209,7 @@
 
             <footer class="page-footer light-blue darken-3">
                 <div class="footer-copyright">
-                    <div class="container">
-                        © 2016 Copyright Text
-                    </div>
+                    <div class="container">© 2016 Copyright Text</div>
                 </div>
             </footer>
         </div>
