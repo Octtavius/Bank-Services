@@ -27,7 +27,7 @@ app.controller('Balance', function ($scope, $http) {
 });
 
 
-// Define Trasnfer Form
+// Define Transfer Form
 app.controller('TransferForm', function ($scope, $http) {
     $scope.formTransferData = {};
 
@@ -54,7 +54,31 @@ app.controller('TransferForm', function ($scope, $http) {
                 //console.log("Name: " + response.data.response);
                 $scope.message = response.data.response;
             }
-            
+
         });
     };
+});
+
+// Set controller to get transactions list
+app.controller('TransactionsTable', function ($scope, $http) {
+    $scope.loadData = function () {
+        console.log('Loading transaction data...');
+        $scope.transactionList = [];
+        $http({
+            method: 'POST',
+            url: 'http://localhost:3000/bankingonline/main/getTransactions',
+            data: $.param({
+                'accountId': '1'
+            }),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(function (response) {
+            $scope.transactionList = response.data;
+        });
+    };
+    
+    // Initial controller run
+    $scope.loadData();
+
 });
