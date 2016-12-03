@@ -8,6 +8,11 @@ package ncirl.teamf.services.dao;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+import ncirl.teamf.services.models.Account;
 import ncirl.teamf.services.models.Customer;
 import ncirl.teamf.services.models.Transaction;
 
@@ -16,6 +21,10 @@ import ncirl.teamf.services.models.Transaction;
  * @author I323506
  */
 public class Repository implements IRepository{
+    
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("Bank");
+    private EntityManager em = emf.createEntityManager();
+    private EntityTransaction tx = em.getTransaction();  
 
     @Override
     public void createAccount(Customer customer) {
@@ -71,7 +80,16 @@ public class Repository implements IRepository{
     public Customer login(int accountId, String password) {
         System.out.println("Loging the users. Return true is successfully logged.");
         
-        Customer customer = new Customer();
+        Account tempAccount;
+        
+        tempAccount = em.find(Account.class, accountId);
+        if(tempAccount != null){
+            if(password.equals(tempAccount.getPassword())){
+                return em.find(Customer.class, tempAccount.getCustomerId());
+            }
+        }
+                
+       /* Customer customer = new Customer();
         
         customer.setFirstName("Jim");
         customer.setMiddleName("Crazy");
@@ -80,7 +98,9 @@ public class Repository implements IRepository{
         customer.setEmail("sickemail@damn.com");
         customer.setContactNumber("66666");
         
-        return customer;
+        return customer; 
+        */
+       return null;
     }   
 
     @Override
