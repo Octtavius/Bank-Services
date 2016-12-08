@@ -35,11 +35,17 @@ public class BankServices {
     @Path("/createAccount")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void createAccountApi(MultivaluedMap<String, String> formParams) {
+    public Response createAccountApi(MultivaluedMap<String, String> formParams) {
         //create  acustomer object. REMEMBER: the id is not set yet.
         //it will be generated in the right class. not here. 
-        Customer newCustomer = createCustomerObject(formParams);
-        rep.createAccount(newCustomer);
+        JsonObject jObj = new JsonObject();        
+        
+        Customer tempCustomer = createCustomerObject(formParams);
+        Customer newCustomer = rep.createAccount(tempCustomer);
+        
+        jObj.addProperty("accountId", newCustomer.getId());
+        
+        return Response.status(200).entity(jObj.toString()).build();
     }
     
     @POST

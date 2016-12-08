@@ -27,25 +27,46 @@ public class Repository implements IRepository{
     private EntityTransaction tx = em.getTransaction();  
 
     @Override
-    public void createAccount(Customer customer) {
+    public Customer createAccount(Customer customer) {
         //GENERATE ID FOR CUSTOMER. 
         //ASSIGN THE NEW ID TOT HE CUSTOMER ID AS IT IS NULL NOW.
+        tx.begin();
+        em.persist(customer);
+        tx.commit();
         System.out.println("Save to database: ");
+        return customer;
     }
     
     @Override
-    public double getBalance(int customerId) {
-        double temp = -1;
-        
-        System.out.println("Get balance from " +customerId+ " and display");
-        return temp;
+    public double getBalance(int accountId) {
+              
+        System.out.println("Get balance from " +accountId+ " and display");
+        Account temp = em.find(Account.class, accountId);
+        return temp.getBalance();
     }
 
     @Override
-    public boolean lodgment(int accNumber, double amount) {
-        System.out.println("Lodge " +amount+ " money in the account: " + accNumber);
-        boolean lodgementSuccessful = false;
-        return lodgementSuccessful;
+    public boolean lodgment(int accountId, double amount) {
+        
+        Account tempAcc = em.find(Account.class, accountId);
+        double preBalance = tempAcc.getBalance();
+     
+        Transaction trans = new Transaction();
+        trans.setAccountId(accountId);
+        trans.setPreBalance(preBalance);
+        trans.setTransactionType("Logdment");
+        trans.setTransactionDescription("");
+        trans.setTransactionAmount(amount);
+        trans.setTimeStamp(1234);
+        trans.setPosBalance(preBalance + amount);
+        tx.begin();
+        em.persist(trans);
+        tempAcc.setBalance(preBalance + amount);
+        tx.commit();
+        
+        System.out.println("Lodge " +amount+ " money in the account: " + accountId);
+        
+        return true;
     }
 
     @Override
