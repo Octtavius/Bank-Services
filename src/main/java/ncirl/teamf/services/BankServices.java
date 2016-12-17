@@ -38,14 +38,25 @@ public class BankServices {
     public Response createAccountApi(MultivaluedMap<String, String> formParams) {
         //create  acustomer object. REMEMBER: the id is not set yet.
         //it will be generated in the right class. not here. 
+        
+        String accountType = formParams.getFirst("accountType");
+        String password = formParams.getFirst("password");       
+        
         JsonObject jObj = new JsonObject();        
         
         Customer tempCustomer = createCustomerObject(formParams);
-        Customer newCustomer = rep.createAccount(tempCustomer);
         
-        jObj.addProperty("response", newCustomer.getId());
         
-        return Response.status(200).entity(jObj.toString()).build();
+        boolean result = rep.createAccount(tempCustomer, accountType, password);
+        if(result){
+            jObj.addProperty("response", tempCustomer.getId());            
+            return Response.status(200).entity(jObj.toString()).build();
+            
+        }
+        else {
+            return Response.status(400).build(); 
+        }
+
     }
     
     @POST

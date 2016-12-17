@@ -29,14 +29,30 @@ public class Repository implements IRepository{
     private EntityTransaction tx = em.getTransaction();  
 
     @Override
-    public Customer createAccount(Customer customer) {
+    public boolean createAccount(Customer customer, String accountType, String password) {
         //GENERATE ID FOR CUSTOMER. 
         //ASSIGN THE NEW ID TOT HE CUSTOMER ID AS IT IS NULL NOW.
+        
         tx.begin();
-        em.persist(customer);
+        em.persist(customer);        
         tx.commit();
-        System.out.println("Save to database: ");
-        return customer;
+        
+        
+        
+        Account newAccount = new Account();
+        newAccount.setAccountType(accountType);
+        newAccount.setSortCode("0999");
+        newAccount.setCustomerId(customer.getId());
+        newAccount.setBalance(0.0);
+        newAccount.setPassword(password);
+        
+//        System.out.println(newAccount.getAccountType());
+//        System.out.println(customer.getEmail());
+        tx.begin();        
+        em.persist(newAccount);
+        tx.commit();
+//        System.out.println("Save to database: " + customer.getFirstName() + " "+ newAccount.getPassword());
+        return true;
     }
     
     @Override
@@ -105,6 +121,8 @@ public class Repository implements IRepository{
         receiverAccount.setBalance(preBalance2 + amount);
         //double posBalance2 = receiverAccount.getBalance();
         
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        
         //sender
         Transaction trans = new Transaction();
         trans.setAccountId(senderAccountNumber);
@@ -112,7 +130,7 @@ public class Repository implements IRepository{
         trans.setTransactionType("Transfer");
         trans.setTransactionDescription("");
         trans.setTransactionAmount(amount);
-        trans.setTimeStamp(1234);
+        trans.setTimeStamp(timestamp.getTime());
         trans.setPosBalance(preBalance - amount);    
         
         //reciever
@@ -122,7 +140,7 @@ public class Repository implements IRepository{
         trans.setTransactionType("Transfer");
         trans.setTransactionDescription("");
         trans.setTransactionAmount(amount);
-        trans.setTimeStamp(1234);
+        trans.setTimeStamp(timestamp.getTime());
         trans.setPosBalance(preBalance + amount); 
                        
         tx.begin();        
@@ -186,20 +204,8 @@ public class Repository implements IRepository{
             if(password.equals(tempAccount.getPassword())){
                 return em.find(Customer.class, tempAccount.getCustomerId());
             }
-        }
-                
-       /* Customer customer = new Customer();
-        
-        customer.setFirstName("Jim");
-        customer.setMiddleName("Crazy");
-        customer.setLastName("Button");
-        customer.setAddress("Nowhere");
-        customer.setEmail("sickemail@damn.com");
-        customer.setContactNumber("66666");
-        
-        return customer; 
-        */
-       return null;
+        }       
+        return null;
     }   
 
     @Override
