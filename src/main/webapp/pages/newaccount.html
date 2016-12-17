@@ -9,47 +9,47 @@
         <div class="container">
             <div class="z-depth-1 grey lighten-4 row" style="width: 50%; display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
 
-                <form class="col s12">
+                <form class="col s12" ng-submit="createAccount()">
                     <div class="row">
                         <div class="input-field col s12">
-                            <input id="first_name" type="text" class="validate">
+                            <input id="first_name" type="text" class="validate" ng-model="formCreateAccoundData.firstName">
                             <label for="first_name">First Name</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <input id="middleName" type="text" class="validate">
+                            <input id="middleName" type="text" class="validate" ng-model="formCreateAccoundData.middleName">
                             <label for="middleName">Middle Name</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <input id="last_name" type="text" class="validate">
+                            <input id="last_name" type="text" class="validate" ng-model="formCreateAccoundData.lastName">
                             <label for="last_name">Last Name</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <input id="password" type="password" class="validate">
+                            <input id="password" type="password" class="validate" ng-model="formCreateAccoundData.password">
                             <label for="password">Password</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <input id="email" type="email" class="validate">
+                            <input id="email" type="email" class="validate" ng-model="formCreateAccoundData.email">
                             <label for="email">Email</label>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="input-field col s12">
-                            <input id="address" type="text" class="validate">
+                            <input id="address" type="text" class="validate" ng-model="formCreateAccoundData.address">
                             <label for="address">Address</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s12">
-                            <input id="contactNumber" type="number" class="validate">
+                            <input id="contactNumber" type="number" class="validate" ng-model="formCreateAccoundData.contactNumber">
                             <label for="contactNumber">Contact Number</label>
                         </div>
                     </div>
