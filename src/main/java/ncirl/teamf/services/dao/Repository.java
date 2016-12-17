@@ -93,7 +93,7 @@ public class Repository implements IRepository{
     }
     
     @Override
-    public boolean transfer(int senderAccountNumber, double amount, int receiverAccountNumber, int sortCode) {
+    public boolean transfer(int senderAccountNumber, double amount, int receiverAccountNumber) {
         System.out.println("Transfering from " + senderAccountNumber  + " $" + amount  + " to " + receiverAccountNumber);
         
         Account senderAccount = em.find(Account.class, senderAccountNumber);
@@ -127,7 +127,8 @@ public class Repository implements IRepository{
         trans.setPosBalance(preBalance + amount); 
                        
         tx.begin();        
-        em.persist(trans);                 
+        em.persist(trans); 
+        em.persist(trans2);
         tx.commit();
         
         System.out.println("Transfer amount: " +amount+ " from account: " + senderAccount + "to account: " + receiverAccount);

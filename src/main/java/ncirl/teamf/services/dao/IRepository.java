@@ -21,7 +21,7 @@ public interface IRepository {
     
     boolean lodgment(int accNumber, double amound); 
     
-    boolean transfer(int senderAccountNumber, double Amount, int recieverAccountNumber, int sortCode);
+    boolean transfer(int senderAccountNumber, double Amount, int recieverAccountNumber);
     
     public String checkRecipient(int accountId);
     

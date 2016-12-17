@@ -112,9 +112,9 @@ public class BankServices {
         int senderAccount = Integer.parseInt(formParams.getFirst("accountId"));
         double amount = Double.parseDouble(formParams.getFirst("amount"));
         int recipientAccount = Integer.parseInt(formParams.getFirst("recipientAccount"));
-        int recipientSortCode = Integer.parseInt(formParams.getFirst("recipientSortCode"));
         
-        boolean response = rep.transfer(senderAccount, amount, recipientAccount, recipientSortCode);
+        
+        boolean response = rep.transfer(senderAccount, amount, recipientAccount);
         
         JsonObject j = new JsonObject();
         j.addProperty("response", response);
