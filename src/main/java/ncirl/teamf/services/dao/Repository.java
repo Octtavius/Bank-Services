@@ -62,6 +62,7 @@ public class Repository implements IRepository{
         tx.begin();
         em.persist(trans);
         tempAcc.setBalance(preBalance + amount);
+        em.persist(trans); // added on 17/12
         tx.commit();
         
         System.out.println("Lodge " +amount+ " money in the account: " + accountId);
@@ -70,24 +71,70 @@ public class Repository implements IRepository{
     }
 
     @Override
-    public String checkRecipient(int accountId, int sortCode) {
-        System.out.println("Searching for user...");
-        
-        String recipientName = "Jim Button";
-        
-        //here we return Customer name or null. if null then user not found
-        
-        return recipientName;
+    public String checkRecipient(int accountId) {
+        String fullName = null;
+       
+       try{
+           Account tempAcc = em.find(Account.class, accountId);
+           int userID = tempAcc.getCustomerId();
+           
+           Customer tempCustomer = em.find(Customer.class, userID);
+           fullName = tempCustomer.getFirstName() + " " + tempCustomer.getMiddleName() + " " + tempCustomer.getLastName();
+       }catch(NullPointerException n) {
+           System.out.println("THIS IS AN ERROR" );
+           System.out.println(n);
+       }
+       
+       return fullName;
     }
     
     @Override
-    public boolean transfer(int senderAccountNumber, double amount, int recieverAccountNumber, int sortCode) {
-        System.out.println("Transfering from " + senderAccountNumber  + " $" + amount  + " to " + recieverAccountNumber);
+    public boolean transfer(int senderAccountNumber, double amount, int receiverAccountNumber, int sortCode) {
+        System.out.println("Transfering from " + senderAccountNumber  + " $" + amount  + " to " + receiverAccountNumber);
         
-        //return success message
-        Customer recipient = new Customer();
+        Account senderAccount = em.find(Account.class, senderAccountNumber);
+        double preBalance = senderAccount.getBalance();
+        senderAccount.setBalance(preBalance - amount);
+        //double posBalance = senderAccount.getBalance();
         
-        return false;
+        Account receiverAccount = em.find(Account.class, receiverAccountNumber);
+        double preBalance2 = receiverAccount.getBalance();
+        receiverAccount.setBalance(preBalance2 + amount);
+        //double posBalance2 = receiverAccount.getBalance();
+        
+        //sender
+        Transaction trans = new Transaction();
+        trans.setAccountId(senderAccountNumber);
+        trans.setPreBalance(preBalance);
+        trans.setTransactionType("Transfer");
+        trans.setTransactionDescription("");
+        trans.setTransactionAmount(amount);
+        trans.setTimeStamp(1234);
+        trans.setPosBalance(preBalance - amount);    
+        
+        //reciever
+        Transaction trans2 = new Transaction();
+        trans.setAccountId(receiverAccountNumber);
+        trans.setPreBalance(preBalance2);
+        trans.setTransactionType("Transfer");
+        trans.setTransactionDescription("");
+        trans.setTransactionAmount(amount);
+        trans.setTimeStamp(1234);
+        trans.setPosBalance(preBalance + amount); 
+                       
+        tx.begin();        
+        em.persist(trans);                 
+        tx.commit();
+        
+        System.out.println("Transfer amount: " +amount+ " from account: " + senderAccount + "to account: " + receiverAccount);
+        //System.out.println("Sender account balance: " + posBalance + ", receiver account balance: "+ posBalance2 + ".");
+        return true;
+        
+        
+//        //return success message
+//        Customer recipient = new Customer();
+//        
+//        return false;
     }
 
     @Override
