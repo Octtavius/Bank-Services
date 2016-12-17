@@ -43,7 +43,7 @@ public class BankServices {
         Customer tempCustomer = createCustomerObject(formParams);
         Customer newCustomer = rep.createAccount(tempCustomer);
         
-        jObj.addProperty("accountId", newCustomer.getId());
+        jObj.addProperty("response", newCustomer.getId());
         
         return Response.status(200).entity(jObj.toString()).build();
     }
@@ -58,7 +58,7 @@ public class BankServices {
         double balance = rep.getBalance(accountId);
         
         JsonObject j = new JsonObject();
-        j.addProperty("balance", balance);
+        j.addProperty("response", balance);
         
         return Response.status(200).entity(j.toString()).build();
     }
@@ -85,21 +85,23 @@ public class BankServices {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response checkSenderCredentials(MultivaluedMap<String, String> formParams) {
         int recipientAccount = Integer.parseInt(formParams.getFirst("recipientAccount"));
-        
-        //keep amount in session storage. we will use it later to transfer it.
-        
-        //go and check if recipient exits or the credentials are correct
-        String recipient = rep.checkRecipient(recipientAccount);
-        
-        if(recipient == null) {
-            return Response.status(404).build();
-        }
-        else {
-            JsonObject j = new JsonObject();
-            j.addProperty("response", recipient);
-        
-            return Response.status(200).entity(j.toString()).build();
-        }
+
+       
+       //keep amount in session storage. we will use it later to transfer it.
+       
+       //go and check if recipient exits or the credentials are correct
+       String recipient = rep.checkRecipient(recipientAccount);
+       
+       if(recipient == null) {
+           return Response.status(404).build();
+       }
+       else {
+           JsonObject j = new JsonObject();
+           j.addProperty("response", recipient);
+       
+           return Response.status(200).entity(j.toString()).build();
+       }
+
     }
     
     @POST
