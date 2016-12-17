@@ -68,14 +68,18 @@
 
                             <form ng-submit="processForm()">
                                 <!-- Selection of operation to execute -->
-                                <label for="first">Lodgment</label>
-                                <input id="first" type="radio" name="content" ng-model="content" value="first">
-                                <br />
-                                <label for="other">Withdrawal</label>
-                                <input id="other" type="radio" name="content" ng-model="content" value="other">
-
+                                <div class="form-group">
+                                    <label>Select Action</label>
+                                    <select ng-model="formTransferData.action">
+                                        <option value="" disabled selected>Choose one action</option>
+                                        <option value="lodgment">Lodgment</option>
+                                        <option value="withdrawal">Withdrawal</option>
+                                        <option value="transfer">Transfer</option>
+                                    </select>
+                                </div>
+                                
                                 <!-- Destination Account -->
-                                <div id="name-group" class="form-group">
+                                <div id="name-group" class="form-group" ng-if="formTransferData.action == 'transfer'">
                                     <label>Destination Account</label>
                                     <input type="text" name="transferDestAccount" class="form-control" placeholder="Insert destination account ID here..." ng-model="formTransferData.destAccountId">
                                     <span class="help-block"></span>
