@@ -50,7 +50,17 @@
                         <span class="card-content">{{currentDate.now() | date:'M dd y'}}</span>
                     </div>
                     <div class="card-action">
-                        <a href="#">User Details</a>
+                        <a href="" class="activator">User Details</a>
+                    </div>
+                     <div class="card-reveal">
+                        <span class="card-title grey-text text-darken-4">User Details<i class="material-icons right">close</i></span>
+                        <p><b>Account ID:</b> {{globals.accountDetails.accountId}}</p>
+                        <p><b>First Name:</b> {{globals.userDetails.firstName}}</p>
+                        <p><b>Middle Name:</b> {{globals.userDetails.middleName}}</p>
+                        <p><b>Last Name:</b> {{globals.userDetails.lastName}}</p>
+                        <p><b>Email:</b></br> {{globals.userDetails.email}}</p>
+                        <p><b>Address:</b></br> {{globals.userDetails.address}}</p>
+                        <p><b>Contact Number:</b> {{globals.userDetails.contactNumber}}</p>
                     </div>
                 </div>
             </div>

@@ -241,11 +241,11 @@ app.controller('AccountActionsFormController', function ($rootScope, $scope, $co
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }).then(function (response) {
-                console.log(response);
-
-                if (response.status !== 200) {
+                //console.log(response);
+                if (response.status == 400) {
+                    console.log('No account found...');
                     $scope.message = "ERROR: No account found!!!";
-                } else {
+                } else if(response.status == 200) {
                     if(action = "transfer" && $scope.formActionsData.confirm == false) {
                         $scope.formActionsData.confirm = true;
                         $scope.message = "Recipient Name: " + response.data.response;
@@ -258,6 +258,8 @@ app.controller('AccountActionsFormController', function ($rootScope, $scope, $co
                     console.log('Refresh UI data...');
                     getBalance($rootScope, $scope, $cookieStore, $http);
                     getTransactions($rootScope, $scope, $cookieStore, $http);
+                } else {
+                    $scope.message = "ERROR: an error has occurred!!!";
                 }
             });
         }
