@@ -1,25 +1,13 @@
 app = angular
-        .module('bankwebpage', ['ui.utils.masks', 'ngRoute', 'ngCookies'])
+        .module('appBankWebPage', ['ui.utils.masks', 'ngRoute', 'ngCookies'])
         .config(config)
         .run(run)
         .controller('LoginController', loginCtrl)
+        .controller('NewAccountController', newAccountCtrl)
         .controller('MainController', mainCtrl)
         .controller('LogoutController', logoutCtrl);
-/*
- app.config(function ($routeProvider) {
- $routeProvider
- .when("/", {
- templateUrl: "pages/login.html"
- })
- .when("/main", {
- templateUrl: "pages/main.html"
- })
- .when("/newaccount", {
- templateUrl: "pages/newaccount.html"
- });
- $routeProvider.otherwise({redirectTo: '/'});
- });
- */
+
+var API_SERVER_URL = "http://localhost:3000/bankingonline/main";
 
 config.$inject = ['$routeProvider', '$locationProvider'];
 function config($routeProvider, $locationProvider) {
@@ -51,14 +39,14 @@ run.$inject = ['$rootScope', '$location', '$cookieStore', '$http'];
 function run($rootScope, $location, $cookieStore, $http) {
     // keep user logged in after page refresh
     $rootScope.globals = $cookieStore.get('globals') || {};
-    if ($rootScope.globals.currentUser) {
-        $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata; // jshint ignore:line
+    if ($rootScope.globals.userLoggedIn) {
+        $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.userLoggedIn.authdata; // jshint ignore:line
     }
 
     $rootScope.$on('$locationChangeStart', function (event, next, current) {
         // redirect to login page if not logged in and trying to access a restricted page
         var restrictedPage = $.inArray($location.path(), ['/login', '/newaccount']) === -1;
-        var loggedIn = $rootScope.globals.currentUser;
+        var loggedIn = $rootScope.globals.userLoggedIn;
         if (restrictedPage && !loggedIn) {
             console.log("User not logged in...");
             $location.path('/login');
@@ -68,8 +56,8 @@ function run($rootScope, $location, $cookieStore, $http) {
 /*------------- Controllers --------------------------------------------------*/
 
 /* Test Controller */
-app.controller('Test', function ($scope, $http) {
-    $http.get('http://localhost:3000/bankingonline/tests/who').
+app.controller('TestController', function ($scope, $http) {
+    $http.get(API_SERVER_URL + '/bankingonline/tests/who').
             then(function (response) {
                 $scope.userDetails = response.data;
             });
@@ -88,7 +76,7 @@ function loginCtrl($rootScope, $scope, $location, $cookieStore, $http) {
         console.log("Processing login form...");
         $http({
             method: 'POST',
-            url: 'http://localhost:3000/bankingonline/main/login',
+            url: API_SERVER_URL + '/login',
             data: $.param({
                 'accountId': $scope.formLoginData.accountId,
                 'password': $scope.formLoginData.password
@@ -108,7 +96,7 @@ function loginCtrl($rootScope, $scope, $location, $cookieStore, $http) {
                     //console.log("Name: " + response.data.response);                
                     console.log("Login successfull...");
                     data = response.data;
-                    $rootScope.userDetails = {
+                    $rootScope.globals.userDetails = {
                         'accountId': $scope.formLoginData.accountId,
                         'firstName': data.firstName,
                         'middleName': data.middleName,
@@ -117,8 +105,10 @@ function loginCtrl($rootScope, $scope, $location, $cookieStore, $http) {
                         'email': data.email,
                         'contactNumber': data.contactNumber
                     };
-                    
-                    $rootScope.globals.currentUser = true;
+                    // Set Account Details
+                    $rootScope.globals.accountDetails = {};
+                    $rootScope.globals.accountDetails.accountId = $scope.formLoginData.accountId;
+                    $rootScope.globals.userLoggedIn = true;
                     $cookieStore.put('globals', $rootScope.globals);
                     
                     // Redirect page
@@ -136,57 +126,153 @@ function loginCtrl($rootScope, $scope, $location, $cookieStore, $http) {
 logoutCtrl.$inject = ['$rootScope', '$scope', '$location', '$cookieStore', '$http'];
 function logoutCtrl($rootScope, $scope, $location, $cookieStore, $http) {
     console.log("Processing logoutCtrl...");    
-    $rootScope.globals.currentUser = false;
+    $rootScope.globals.userLoggedIn = false;
     $cookieStore.put('globals', '');
     
     $location.path("/");
 };
 
 
-/* Main Controller */
-mainCtrl.$inject = ['$rootScope', '$scope', '$location', '$cookieStore', '$http'];
-function mainCtrl($rootScope, $scope, $location, $cookieStore, $http) {
-    console.log("Processing loginCtrl...");
-    getBalance($rootScope, $scope, $http);
-    getTransactions($rootScope, $scope, $http);
-};
-
-
-// Define Transfer Form
-app.controller('TransferForm', function ($rootScope, $scope, $http) {
-    $scope.formTransferData = {};
-
-    $scope.processForm = function () {
-        console.log("Processing transfer form...");
+/*  New Account Controller */
+newAccountCtrl.$inject = ['$rootScope', '$scope', '$location', '$cookieStore', '$http'];
+function newAccountCtrl($rootScope, $scope, $location, $cookieStore, $http) {
+    console.log("Processing newAccountCtrl...");
+    $scope.formNewAccountData = {};
+    
+    $scope.createAccount = function () {
+        console.log("Processing login form...");
         $http({
             method: 'POST',
-            url: 'http://localhost:3000/bankingonline/main/transfer',
+            url: API_SERVER_URL + '/createAccount',
             data: $.param({
-                'accountId': $rootScope.userDetails.accountId,
-                'amount': $scope.formTransferData.amount,
-                'recipientAccount': $scope.formTransferData.destAccountId,
-                'recipientSortCode': '11'
+                'firstName': $scope.formCreateAccoundData.firstName,
+                'middleName': $scope.formCreateAccoundData.middleName,
+                'lastName': $scope.formCreateAccoundData.lastName,
+                'password': $scope.formCreateAccoundData.password,
+                'email': $scope.formCreateAccoundData.email,
+                'address': $scope.formCreateAccoundData.address,
+                'contactNumber': $scope.formCreateAccoundData.contactNumber
             }),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
+
         }).then(function (response) {
             console.log(response);
 
             if (response.status !== 200) {
-                $scope.message = "ERROR: No account found!!!";
+                $scope.message = "ERROR: occurred an error";
             } else {
-                //console.log("Name: " + response.data.response);
-                $scope.message = response.data.response;
-            }
 
+                if(response.data != 'null' || response.data != '') {
+                    //console.log("Name: " + response.data.response);                
+                    console.log("Account created successfully...");
+                    data = response.data;
+                    $rootScope.globals.userDetails = {
+                        'accountId': $scope.formLoginData.accountId,
+                        'firstName': data.firstName,
+                        'middleName': data.middleName,
+                        'lastName': data.lastName,
+                        'address': data.address,
+                        'email': data.email,
+                        'contactNumber': data.contactNumber
+                    };
+                    
+                    // Redirect page
+                    $location.path("/");
+                } else {
+                    $scope.message = "Please check the details";
+                }
+            }
         });
     };
+};
+
+/* Main Controller */
+mainCtrl.$inject = ['$rootScope', '$scope', '$location', '$cookieStore', '$http'];
+function mainCtrl($rootScope, $scope, $location, $cookieStore, $http) {
+    console.log("Processing loginCtrl...");
+    getBalance($rootScope, $scope, $cookieStore, $http);
+    getTransactions($rootScope, $scope, $cookieStore, $http);
+};
+
+
+// Define Account Actions Form Controller
+app.controller('AccountActionsFormController', function ($rootScope, $scope, $cookieStore, $http) {
+    $rootScope.globals = $cookieStore.get('globals') || {};
+    $scope.formActionsData = {};
+    $scope.formActionsData.confirm = false;
+    
+    $scope.processForm = function () {
+        console.log("Processing transfer form...");
+        console.log("Action execute: " + $scope.formActionsData.action);
+        
+        action = "";
+        params = {};
+        
+        params.accountId = $rootScope.globals.userDetails.accountId;
+        params.amount = $scope.formActionsData.amount;
+        
+        switch($scope.formActionsData.action) {
+            case "lodgement":
+                action = "/lodgement";
+                break;
+            case "withdraw":
+                action = "/withdraw";
+                break;
+            case "transfer":
+                if($scope.formActionsData.confirm == true) {
+                    action = "/transferExecute";
+                } else {
+                    action = "/checkAccountById";
+                }
+                params.recipientAccount = $scope.formActionsData.destAccountId;
+                break;
+            default:
+                console.log("Unknown requested action");
+                break;
+        }
+        if (action != '') {
+            $http({
+                method: 'POST',
+                url: API_SERVER_URL + action,
+                data: $.param(params),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then(function (response) {
+                console.log(response);
+
+                if (response.status !== 200) {
+                    $scope.message = "ERROR: No account found!!!";
+                } else {
+                    if(action = "transfer" && $scope.formActionsData.confirm == false) {
+                        $scope.formActionsData.confirm = true;
+                        $scope.message = "Recipient Name: " + response.data.response;
+                    } else {
+                        $scope.message = "Transfer completed";
+                        $scope.accountActions.$setPristine();
+                        $scope.accountActions.selectAction.$setUntouched();
+                    }
+                    
+                    console.log('Refresh UI data...');
+                    getBalance($rootScope, $scope, $cookieStore, $http);
+                    getTransactions($rootScope, $scope, $cookieStore, $http);
+                }
+            });
+        }
+        
+        
+    };
+    
+
+    
 });
 
 // get transactions list
-getTransactions.$inject = ['$rootScope', '$scope', '$http'];
-function getTransactions($rootScope, $scope, $http) {
+getTransactions.$inject = ['$rootScope', '$scope', '$cookieStore', '$http'];
+function getTransactions($rootScope, $scope, $cookieStore, $http) {
+    $rootScope.globals = $cookieStore.get('globals') || {};
     $scope.loadData = function () {
         console.log('Loading transaction data...');
         $scope.transactionList = [];
@@ -194,7 +280,7 @@ function getTransactions($rootScope, $scope, $http) {
             method: 'POST',
             url: 'http://localhost:3000/bankingonline/main/getTransactions',
             data: $.param({
-                'accountId': $rootScope.userDetails.accountId
+                'accountId': $rootScope.globals.accountDetails.accountId
             }),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -210,20 +296,21 @@ function getTransactions($rootScope, $scope, $http) {
 };
 
 // get balance
-getTransactions.$inject = ['$rootScope', '$scope', '$http'];
-function getBalance($rootScope, $scope, $http) {
+getBalance.$inject = ['$rootScope', '$scope', '$cookieStore', '$http'];
+function getBalance($rootScope, $scope, $cookieStore, $http) {
+    $rootScope.globals = $cookieStore.get('globals') || {};
     $scope.loadData = function () {
         $http({
             method: 'POST',
             url: 'http://localhost:3000/bankingonline/main/balance',
             data: $.param({
-                'accountId': '303'
+                'accountId': $rootScope.globals.accountDetails.accountId
             }),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }).then(function (response) {
-            $scope.accountDetails = response.data;
+            $rootScope.globals.accountDetails.balance = response.data.response;
         });
     };
     

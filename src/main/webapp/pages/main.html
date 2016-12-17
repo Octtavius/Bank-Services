@@ -28,7 +28,7 @@
                         </table>
                     </div>
                     <div class="card-action">
-                        <a ng-click="getBalance.loadData()" href="">Refresh</a>
+                        <a ng-click="loadData()" href="">Refresh</a>
                     </div>
                 </div>
             </div>
@@ -41,12 +41,12 @@
             <div class="col s12 m7">
                 <div class="card" >
                     <div class="card-image" >
-                        <img src="images/sample-1.jpg">
-                        <span class="card-title">Welcome {{userDetails.firstName}} {{userDetails.lastName}}</span>
+                        <img src="images/sample-1.jpg" alt="">
+                        <span class="card-title">Welcome {{globals.userDetails.firstName}} {{globals.userDetails.lastName}}</span>
                     </div>
                     <div class="card-content">
-                        <h6><p>Account ID: {{userDetails.accountId}}</p></h6>
-                        <h6><p>Current Balance: €{{accountDetails.balance}} </p></h6>
+                        <h6>Account ID: {{globals.accountDetails.accountId}}</h6>
+                        <h6>Current Balance: €{{globals.accountDetails.balance}}</h6>
                         <span class="card-content">{{currentDate.now() | date:'M dd y'}}</span>
                     </div>
                     <div class="card-action">
@@ -62,40 +62,49 @@
                     <div class="card-content">
                         <span class="card-title grey-text text-darken-4">Account Operations</span>
 
-                        <div ng-controller="TransferForm">
+                        <div ng-controller="AccountActionsFormController">
                             <!-- PlaceHolder for Messages -->
-                            <div id="messages" ng-show="message">{{ message}}</div>
+                            <div id="messages" ng-show="message">{{ message }}</div>
 
-                            <form ng-submit="processForm()">
+                            <form name="accountActions" ng-submit="processForm()">
                                 <!-- Selection of operation to execute -->
                                 <div class="form-group">
                                     <label>Select Action</label>
-                                    <select class="browser-default" ng-model="formTransferData.action">
+                                    <select class="browser-default" name="selectAction" ng-model="formActionsData.action">
                                         <option value="" disabled selected>Choose one action</option>
-                                        <option value="lodgment">Lodgment</option>
-                                        <option value="withdrawal">Withdrawal</option>
+                                        <option value="lodgement">Lodgement</option>
+                                        <option value="withdraw">Withdraw</option>
                                         <option value="transfer">Transfer</option>
                                     </select>
                                 </div>
                                 
                                 <!-- Destination Account -->
-                                <div id="name-group" class="form-group" ng-if="formTransferData.action == 'transfer'">
+                                <div class="form-group" ng-if="formActionsData.action == 'transfer'">
                                     <label>Destination Account</label>
-                                    <input type="text" name="transferDestAccount" class="form-control" placeholder="Insert destination account ID here..." ng-model="formTransferData.destAccountId">
+                                    <input type="text" name="transferDestAccount" class="form-control" placeholder="Insert destination account ID here..." ng-model="formActionsData.destAccountId">
                                     <span class="help-block"></span>
                                 </div>
 
                                 <!-- Description -->
-                                <div id="superhero-group" class="form-group">
+                                <div class="form-group">
                                     <label>Amount</label>
-                                    <input type="text" name="transferValue" class="form-control" placeholder="Insert value here..." ng-model="formTransferData.amount" ui-money-mask>
+                                    <input type="text" name="transferValue" class="form-control" placeholder="Insert value here..." ng-model="formActionsData.amount" ui-money-mask>
                                     <span class="help-block"></span>
                                 </div>
 
                                 <!-- Transfer Button -->
-                                <button type="submit" class="btn btn-success btn-lg btn-block">
-                                    <span class="glyphicon glyphicon-flash"></span> Transfer
-                                </button>
+                                <div class="form-group">
+                                    <div>
+                                        <button type="submit" ng-if="formActionsData.confirm != true" class="btn btn-success btn-lg btn-block">
+                                            <span class="glyphicon glyphicon-flash"></span> Execute
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button type="submit" ng-if="formActionsData.confirm == true" class="btn btn-success btn-lg btn-block">
+                                            <span class="glyphicon glyphicon-flash"></span> Confirm
+                                        </button>
+                                    </div>
+                                </div>
                             </form>
                         </div>
                     </div>
