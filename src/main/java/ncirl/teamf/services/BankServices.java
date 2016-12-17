@@ -85,6 +85,7 @@ public class BankServices {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response checkSenderCredentials(MultivaluedMap<String, String> formParams) {
         int recipientAccount = Integer.parseInt(formParams.getFirst("recipientAccount"));
+
        
        //keep amount in session storage. we will use it later to transfer it.
        
@@ -100,6 +101,7 @@ public class BankServices {
        
            return Response.status(200).entity(j.toString()).build();
        }
+
     }
     
     @POST
@@ -130,10 +132,11 @@ public class BankServices {
         
         boolean response = rep.withdraw(userAccount, amount);
         
-        JsonObject j = new JsonObject();
-        j.addProperty("response", response);
-        
-        return Response.status(200).entity(j.toString()).build();
+//        JsonObject j = new JsonObject();
+//        j.addProperty("response", response);
+//        
+//        return Response.status(200).entity(j.toString()).build();
+        return null;
     }
     
     @POST

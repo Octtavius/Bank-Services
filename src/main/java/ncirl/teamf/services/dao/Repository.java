@@ -5,6 +5,7 @@
  */
 package ncirl.teamf.services.dao;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import ncirl.teamf.services.models.Account;
 import ncirl.teamf.services.models.Customer;
 import ncirl.teamf.services.models.Transaction;
@@ -47,7 +49,7 @@ public class Repository implements IRepository{
 
     @Override
     public boolean lodgment(int accountId, double amount) {
-        
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Account tempAcc = em.find(Account.class, accountId);
         double preBalance = tempAcc.getBalance();
      
@@ -57,7 +59,7 @@ public class Repository implements IRepository{
         trans.setTransactionType("Logdment");
         trans.setTransactionDescription("");
         trans.setTransactionAmount(amount);
-        trans.setTimeStamp(1234);
+        trans.setTimeStamp(timestamp.getTime());
         trans.setPosBalance(preBalance + amount);
         tx.begin();
         em.persist(trans);
@@ -73,6 +75,7 @@ public class Repository implements IRepository{
     @Override
     public String checkRecipient(int accountId) {
         String fullName = null;
+
        
        try{
            Account tempAcc = em.find(Account.class, accountId);
@@ -86,6 +89,7 @@ public class Repository implements IRepository{
        }
        
        return fullName;
+
     }
     
     @Override
@@ -139,7 +143,25 @@ public class Repository implements IRepository{
 
     @Override
     public boolean withdraw(int accountNumber, double amount) {
-        System.out.println("Withdraw " + amount + " from account: " + accountNumber);
+        boolean result = false;
+        try{
+            Account tempAcc = em.find(Account.class, accountNumber);
+            double currentAmount = tempAcc.getBalance();
+            
+            currentAmount = currentAmount - amount;
+            
+            tempAcc.setBalance(currentAmount);
+            
+            tx.begin();
+            em.persist(tempAcc);
+            tx.commit();
+            
+            result = true;
+            
+        }catch(NullPointerException ne) {
+            System.out.println("NULL POINTER EXCEPTION\n" + ne);
+            result = false;
+        }
         
         return false;
     }
@@ -172,16 +194,10 @@ public class Repository implements IRepository{
     }   
 
     @Override
-    public List<Transaction> getTransactions(int userAccount) {
-        List<Transaction> allTransactions = new ArrayList<>();
-        Date d = new Date();
-        Transaction t = new Transaction();
-        t.setTransactionType("transfer");
-        t.setPosBalance(100.00);
-        t.setPreBalance(100.00);
-        t.setTimeStamp(d.getTime());
-        
-        allTransactions.add(t);
+    public List<Transaction> getTransactions(int accountId) {
+        List<Transaction> allTransactions = em.createQuery(" FROM Transaction t WHERE t.accountId = :accountId order by t.timeStamp desc")
+            .setParameter("accountId", accountId)
+            .getResultList();
         
         return allTransactions;
     }
