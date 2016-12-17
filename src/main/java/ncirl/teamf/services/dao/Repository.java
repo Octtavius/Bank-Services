@@ -72,14 +72,21 @@ public class Repository implements IRepository{
     }
 
     @Override
-    public String checkRecipient(int accountId, int sortCode) {
-        System.out.println("Searching for user...");
+    public String checkRecipient(int accountId) {
+        String fullName = null;
         
-        String recipientName = "Jim Button";
+        try{
+            Account tempAcc = em.find(Account.class, accountId);
+            int userID = tempAcc.getCustomerId();
+            
+            Customer tempCustomer = em.find(Customer.class, userID);
+            fullName = tempCustomer.getFirstName() + " " + tempCustomer.getMiddleName() + " " + tempCustomer.getLastName();
+        }catch(NullPointerException n) {
+            System.out.println("THIS IS AN ERROR" );
+            System.out.println(n);
+        }
         
-        //here we return Customer name or null. if null then user not found
-        
-        return recipientName;
+        return fullName;
     }
     
     @Override
@@ -94,7 +101,25 @@ public class Repository implements IRepository{
 
     @Override
     public boolean withdraw(int accountNumber, double amount) {
-        System.out.println("Withdraw " + amount + " from account: " + accountNumber);
+        boolean result = false;
+        try{
+            Account tempAcc = em.find(Account.class, accountNumber);
+            double currentAmount = tempAcc.getBalance();
+            
+            currentAmount = currentAmount - amount;
+            
+            tempAcc.setBalance(currentAmount);
+            
+            tx.begin();
+            em.persist(tempAcc);
+            tx.commit();
+            
+            result = true;
+            
+        }catch(NullPointerException ne) {
+            System.out.println("NULL POINTER EXCEPTION\n" + ne);
+            result = false;
+        }
         
         return false;
     }

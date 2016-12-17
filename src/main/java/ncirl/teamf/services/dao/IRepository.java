@@ -23,7 +23,7 @@ public interface IRepository {
     
     boolean transfer(int senderAccountNumber, double Amount, int recieverAccountNumber, int sortCode);
     
-    public String checkRecipient(int accountId, int sortCode);
+    public String checkRecipient(int accountId);
     
     boolean withdraw(int accountNumber, double amount);
     

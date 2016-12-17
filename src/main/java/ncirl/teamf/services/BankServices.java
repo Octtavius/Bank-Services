@@ -84,22 +84,22 @@ public class BankServices {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response checkSenderCredentials(MultivaluedMap<String, String> formParams) {
-        int senderAccount = Integer.parseInt(formParams.getFirst("accountId"));
-        double amount = Double.parseDouble(formParams.getFirst("amount"));
         int recipientAccount = Integer.parseInt(formParams.getFirst("recipientAccount"));
-        int recipientSortCode = Integer.parseInt(formParams.getFirst("recipientSortCode"));
         
         //keep amount in session storage. we will use it later to transfer it.
         
         //go and check if recipient exits or the credentials are correct
-        String recipient = rep.checkRecipient(recipientAccount, recipientSortCode);
+        String recipient = rep.checkRecipient(recipientAccount);
         
-        //on the check if response if string then display the recipient. everything is ok
-        //if the response if null, then user couldn't be found. let user know
-      JsonObject j = new JsonObject();
-        j.addProperty("response", recipient);
+        if(recipient == null) {
+            return Response.status(404).build();
+        }
+        else {
+            JsonObject j = new JsonObject();
+            j.addProperty("response", recipient);
         
-        return Response.status(200).entity(j.toString()).build();
+            return Response.status(200).entity(j.toString()).build();
+        }
     }
     
     @POST
@@ -130,10 +130,11 @@ public class BankServices {
         
         boolean response = rep.withdraw(userAccount, amount);
         
-        JsonObject j = new JsonObject();
-        j.addProperty("response", response);
-        
-        return Response.status(200).entity(j.toString()).build();
+//        JsonObject j = new JsonObject();
+//        j.addProperty("response", response);
+//        
+//        return Response.status(200).entity(j.toString()).build();
+        return null;
     }
     
     @POST
