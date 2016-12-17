@@ -146,14 +146,23 @@ public class Repository implements IRepository{
         boolean result = false;
         try{
             Account tempAcc = em.find(Account.class, accountNumber);
-            double currentAmount = tempAcc.getBalance();
+            double preBalance = tempAcc.getBalance();
+
+            tempAcc.setBalance(preBalance - amount);
             
-            currentAmount = currentAmount - amount;
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             
-            tempAcc.setBalance(currentAmount);
+            Transaction trans = new Transaction();
+            trans.setAccountId(accountNumber);
+            trans.setPreBalance(preBalance);
+            trans.setTransactionType("Withdraw");
+            trans.setTransactionDescription("");
+            trans.setTransactionAmount(amount);
+            trans.setTimeStamp(timestamp.getTime());
+            trans.setPosBalance(preBalance - amount);
             
             tx.begin();
-            em.persist(tempAcc);
+            em.persist(trans);
             tx.commit();
             
             result = true;
@@ -163,7 +172,7 @@ public class Repository implements IRepository{
             result = false;
         }
         
-        return false;
+        return result;
     }
 
     @Override

@@ -80,7 +80,7 @@ public class BankServices {
     }
     
     @POST
-    @Path("/transfer")
+    @Path("/checkAccountById")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response checkSenderCredentials(MultivaluedMap<String, String> formParams) {
@@ -93,7 +93,7 @@ public class BankServices {
        String recipient = rep.checkRecipient(recipientAccount);
        
        if(recipient == null) {
-           return Response.status(404).build();
+           return Response.status(400).build();
        }
        else {
            JsonObject j = new JsonObject();
@@ -132,11 +132,10 @@ public class BankServices {
         
         boolean response = rep.withdraw(userAccount, amount);
         
-//        JsonObject j = new JsonObject();
-//        j.addProperty("response", response);
-//        
-//        return Response.status(200).entity(j.toString()).build();
-        return null;
+        JsonObject j = new JsonObject();
+        j.addProperty("response", response);
+        
+        return Response.status(200).entity(j.toString()).build();
     }
     
     @POST
