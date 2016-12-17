@@ -63,8 +63,7 @@ public class Repository implements IRepository{
         trans.setPosBalance(preBalance + amount);
         tx.begin();
         em.persist(trans);
-        tempAcc.setBalance(preBalance + amount);
-        em.persist(trans); // added on 17/12
+        tempAcc.setBalance(preBalance + amount);       
         tx.commit();
         
         System.out.println("Lodge " +amount+ " money in the account: " + accountId);
