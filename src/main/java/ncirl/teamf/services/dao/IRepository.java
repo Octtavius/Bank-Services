@@ -17,7 +17,7 @@ public interface IRepository {
     
     Customer login(int accountId, String password);
     
-    boolean createAccount(Customer customer, String accountType, String password);
+    int createAccount(Customer customer, String accountType, String password);
     
     boolean lodgment(int accNumber, double amound); 
     

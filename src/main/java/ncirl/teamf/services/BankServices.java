@@ -46,10 +46,10 @@ public class BankServices {
         
         Customer tempCustomer = createCustomerObject(formParams);
         
-        
-        boolean result = rep.createAccount(tempCustomer, accountType, password);
-        if(result){
-            jObj.addProperty("response", tempCustomer.getId());            
+        int result = -1;
+        result = rep.createAccount(tempCustomer, accountType, password);
+        if(result != -1){
+            jObj.addProperty("response", result);            
             return Response.status(200).entity(jObj.toString()).build();
             
         }

@@ -29,7 +29,7 @@ public class Repository implements IRepository{
     private EntityTransaction tx = em.getTransaction();  
 
     @Override
-    public boolean createAccount(Customer customer, String accountType, String password) {
+    public int createAccount(Customer customer, String accountType, String password) {
         //GENERATE ID FOR CUSTOMER. 
         //ASSIGN THE NEW ID TOT HE CUSTOMER ID AS IT IS NULL NOW.
         
@@ -52,7 +52,7 @@ public class Repository implements IRepository{
         em.persist(newAccount);
         tx.commit();
 //        System.out.println("Save to database: " + customer.getFirstName() + " "+ newAccount.getPassword());
-        return true;
+        return newAccount.getId();
     }
     
     @Override
