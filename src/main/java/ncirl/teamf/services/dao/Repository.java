@@ -135,13 +135,13 @@ public class Repository implements IRepository{
         
         //reciever
         Transaction trans2 = new Transaction();
-        trans.setAccountId(receiverAccountNumber);
-        trans.setPreBalance(preBalance2);
-        trans.setTransactionType("Transfer");
-        trans.setTransactionDescription("");
-        trans.setTransactionAmount(amount);
-        trans.setTimeStamp(timestamp.getTime());
-        trans.setPosBalance(preBalance + amount); 
+        trans2.setAccountId(receiverAccountNumber);
+        trans2.setPreBalance(preBalance2);
+        trans2.setTransactionType("Transfer");
+        trans2.setTransactionDescription("");
+        trans2.setTransactionAmount(amount);
+        trans2.setTimeStamp(timestamp.getTime());
+        trans2.setPosBalance(preBalance + amount); 
                        
         tx.begin();        
         em.persist(trans); 
