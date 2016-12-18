@@ -214,8 +214,8 @@ app.controller('AccountActionsFormController', function ($rootScope, $scope, $co
         params.amount = $scope.formActionsData.amount;
         
         switch($scope.formActionsData.action) {
-            case "lodgement":
-                action = "/lodgement";
+            case "lodgment":
+                action = "/lodgment";
                 break;
             case "withdraw":
                 action = "/withdraw";

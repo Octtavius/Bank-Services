@@ -75,7 +75,7 @@ public class BankServices {
     }
     
     @POST
-    @Path("/lodgement")
+    @Path("/lodgment")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response lodgmentApi(MultivaluedMap<String, String> formParams) {
