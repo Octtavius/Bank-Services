@@ -92,7 +92,7 @@ function loginCtrl($rootScope, $scope, $location, $cookieStore, $http) {
                 $scope.message = "ERROR: occurred an error";
             } else {
 
-                if(response.data !== 'null' || response.data !== '') {
+                if(response.data != 'null' || response.data != '') {
                     //console.log("Name: " + response.data.response);                
                     console.log("Login successfull...");
                     data = response.data;
@@ -164,7 +164,7 @@ function newAccountCtrl($rootScope, $scope, $location, $cookieStore, $http) {
                 $scope.message = "ERROR: occurred an error";
             } else {
 
-                if(response.data !== 'null' || response.data !== '') {
+                if(response.data != 'null' || response.data != '') {
                     //console.log("Name: " + response.data.response);                
                     console.log("Account created successfully...");
                     data = response.data;
@@ -204,27 +204,28 @@ app.controller('AccountActionsFormController', function ($rootScope, $scope, $co
     $scope.formActionsData.confirm = false;
     
     $scope.processForm = function () {
-        console.log("Processing transfer form...");
+        console.log("Processing operations form...");
         console.log("Action execute: " + $scope.formActionsData.action);
         
         action = "";
         params = {};
+        $scope.message = ""; // Reset status message
         
         params.accountId = $rootScope.globals.userDetails.accountId;
         params.amount = $scope.formActionsData.amount;
         
         switch($scope.formActionsData.action) {
             case "lodgment":
-                action = "/lodgment";
+                action = "lodgment";
                 break;
             case "withdraw":
-                action = "/withdraw";
+                action = "withdraw";
                 break;
             case "transfer":
-                if($scope.formActionsData.confirm === true) {
-                    action = "/transferExecute";
+                if($scope.formActionsData.confirm == true) {
+                    action = "transferExecute";
                 } else {
-                    action = "/checkAccountById";
+                    action = "checkAccountById";
                 }
                 params.recipientAccount = $scope.formActionsData.destAccountId;
                 break;
@@ -232,44 +233,66 @@ app.controller('AccountActionsFormController', function ($rootScope, $scope, $co
                 console.log("Unknown requested action");
                 break;
         }
-        if (action !== '') {
+        if (action != '') {
             $http({
                 method: 'POST',
-                url: API_SERVER_URL + action,
+                url: API_SERVER_URL + "/" + action,
                 data: $.param(params),
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }).then(function (response) {
                 //console.log(response);
-                if (response.status === 400) {
+                if (response.status == 400) {
                     console.log('No account found...');
                     $scope.message = "ERROR: No account found!!!";
-                } else if(response.status === 200) {
-                    if(action === "transfer" && $scope.formActionsData.confirm === false) {
-                        $scope.formActionsData.confirm = true;
-                        $scope.message = "Recipient Name: " + response.data.response;
-                    } else {
-                        $scope.message = "Transfer completed";
-                        $scope.accountActions.$setPristine();
-                        $scope.accountActions.selectAction.$setUntouched();
+                } else if(response.status == 200) {
+                    if(action == "transferExecute" || action == "checkAccountById") {
+                        console.log("Executing transfer...");
+                        if ($scope.formActionsData.confirm == false) {
+                            $scope.formActionsData.confirm = true;
+                            $scope.message = "Recipient Name: " + response.data.response;
+                        } else if ($scope.formActionsData.confirm == true) {
+                            $scope.message = "Transfer completed";
+                            $scope.formActionsData.confirm = false;
+                            
+                            // Clear transfer form
+                            var defaultForm={
+                                selectAction: "",
+                                transferDestAccount: "",
+                                transferValue:""
+                            }
+                            $scope.accountActions.$setPristine();
+                            $scope.formActionsData = angular.copy(defaultForm);
+
+                            console.log("Form cleaned...");
+                        }
+                    } else if(action == "lodgment" || action == "withdraw") {
+                        $scope.message = "Operation completed";
                         
-                        console.log('Refresh UI data...');
-                        getBalance($rootScope, $scope, $cookieStore, $http);
-                        getTransactions($rootScope, $scope, $cookieStore, $http);
-                        
+                        // Clear transfer form
                         var defaultForm={
                             selectAction: "",
                             transferDestAccount: "",
                             transferValue:""
                         }
-                        
                         $scope.accountActions.$setPristine();
                         $scope.formActionsData = angular.copy(defaultForm);
-                        
+
                         console.log("Form cleaned...");
                     }
                     
+                    console.log('Refresh UI data...');
+                    getBalance($rootScope, $scope, $cookieStore, $http);
+                    getTransactions($rootScope, $scope, $cookieStore, $http);
+                    
+                    // If we checking for account ID for a transfer this is
+                    // not required
+                    if(action != "checkAccountById") {
+                        $rootScope.$emit("GetTransactionLoadData", {});
+                        $rootScope.$emit("GetBalanceLoadData", {});
+                    }
+
                 } else {
                     $scope.message = "ERROR: an error has occurred!!!";
                 }
@@ -287,6 +310,11 @@ app.controller('AccountActionsFormController', function ($rootScope, $scope, $co
 getTransactions.$inject = ['$rootScope', '$scope', '$cookieStore', '$http'];
 function getTransactions($rootScope, $scope, $cookieStore, $http) {
     $rootScope.globals = $cookieStore.get('globals') || {};
+    
+    $rootScope.$on("GetTransactionLoadData", function(){
+        $scope.loadData();
+    });
+    
     $scope.loadData = function () {
         console.log('Loading transaction data...');
         $scope.transactionList = [];
@@ -313,6 +341,11 @@ function getTransactions($rootScope, $scope, $cookieStore, $http) {
 getBalance.$inject = ['$rootScope', '$scope', '$cookieStore', '$http'];
 function getBalance($rootScope, $scope, $cookieStore, $http) {
     $rootScope.globals = $cookieStore.get('globals') || {};
+    
+    $rootScope.$on("GetBalanceLoadData", function(){
+        $scope.loadData();
+    });
+    
     $scope.loadData = function () {
         $http({
             method: 'POST',
