@@ -92,7 +92,7 @@ function loginCtrl($rootScope, $scope, $location, $cookieStore, $http) {
                 $scope.message = "ERROR: occurred an error";
             } else {
 
-                if(response.data != 'null' || response.data != '') {
+                if(response.data !== 'null' || response.data !== '') {
                     //console.log("Name: " + response.data.response);                
                     console.log("Login successfull...");
                     data = response.data;
@@ -164,7 +164,7 @@ function newAccountCtrl($rootScope, $scope, $location, $cookieStore, $http) {
                 $scope.message = "ERROR: occurred an error";
             } else {
 
-                if(response.data != 'null' || response.data != '') {
+                if(response.data !== 'null' || response.data !== '') {
                     //console.log("Name: " + response.data.response);                
                     console.log("Account created successfully...");
                     data = response.data;
@@ -221,7 +221,7 @@ app.controller('AccountActionsFormController', function ($rootScope, $scope, $co
                 action = "/withdraw";
                 break;
             case "transfer":
-                if($scope.formActionsData.confirm == true) {
+                if($scope.formActionsData.confirm === true) {
                     action = "/transferExecute";
                 } else {
                     action = "/checkAccountById";
@@ -232,7 +232,7 @@ app.controller('AccountActionsFormController', function ($rootScope, $scope, $co
                 console.log("Unknown requested action");
                 break;
         }
-        if (action != '') {
+        if (action !== '') {
             $http({
                 method: 'POST',
                 url: API_SERVER_URL + action,
@@ -242,22 +242,34 @@ app.controller('AccountActionsFormController', function ($rootScope, $scope, $co
                 }
             }).then(function (response) {
                 //console.log(response);
-                if (response.status == 400) {
+                if (response.status === 400) {
                     console.log('No account found...');
                     $scope.message = "ERROR: No account found!!!";
-                } else if(response.status == 200) {
-                    if(action = "transfer" && $scope.formActionsData.confirm == false) {
+                } else if(response.status === 200) {
+                    if(action === "transfer" && $scope.formActionsData.confirm === false) {
                         $scope.formActionsData.confirm = true;
                         $scope.message = "Recipient Name: " + response.data.response;
                     } else {
                         $scope.message = "Transfer completed";
                         $scope.accountActions.$setPristine();
                         $scope.accountActions.selectAction.$setUntouched();
+                        
+                        console.log('Refresh UI data...');
+                        getBalance($rootScope, $scope, $cookieStore, $http);
+                        getTransactions($rootScope, $scope, $cookieStore, $http);
+                        
+                        var defaultForm={
+                            selectAction: "",
+                            transferDestAccount: "",
+                            transferValue:""
+                        }
+                        
+                        $scope.accountActions.$setPristine();
+                        $scope.formActionsData = angular.copy(defaultForm);
+                        
+                        console.log("Form cleaned...");
                     }
                     
-                    console.log('Refresh UI data...');
-                    getBalance($rootScope, $scope, $cookieStore, $http);
-                    getTransactions($rootScope, $scope, $cookieStore, $http);
                 } else {
                     $scope.message = "ERROR: an error has occurred!!!";
                 }
